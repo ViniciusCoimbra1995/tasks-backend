@@ -27,13 +27,19 @@ pipeline {
                 timeout(time: 1, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
-
             }
         }
         stage ('Deploy Backend') {
             steps {
                 deploy adapters: [tomcat8(credentialsId: 'TomcatLogin', path: '', url: 'http://localhost:8001')], contextPath: '/tasks-backend', war: '**/*.war'
             }
+        }
+         stage ('API Test') {
+            steps {
+                git credentialsId: 'github_login', url: 'https://github.com/ViniciusCoimbra1995/tasks-api-test'
+                bat 'mvn test'
+            }
+         
         }
     }
 }
